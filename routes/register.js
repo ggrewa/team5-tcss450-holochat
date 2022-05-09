@@ -12,7 +12,6 @@ let isStringProvided = validation.isStringProvided
 const generateHash = require('../utilities').generateHash
 const generateSalt = require('../utilities').generateSalt
 
-require("dotenv").config();
 const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 const config = {
