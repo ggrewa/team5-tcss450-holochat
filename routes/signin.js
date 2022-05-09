@@ -96,25 +96,35 @@ router.get('/', (request, response, next) => {
 
             //Did our salted hash match their salted hash?
             if (storedSaltedHash === providedSaltedHash ) {
-                //credentials match. get a new JWT
-                let token = jwt.sign(
-                    {
-                        "email": request.auth.email,
-                        "memberid": result.rows[0].memberid
-                    },
-                    config.secret,
-                    { 
-                        expiresIn: '14 days' // expires in 14 days
-                    }
-                )
-                //package and send the results
-                response.json({
-                    success: true,
-                    message: 'Authentication successful!',
-                    token: token
-                })
+                
+                let verificationQuery = 'SELECT verification, memberid FROM Members WHERE email=$1'
+                pool.query(verificationQuery, values)
+                    .then(result => {
+                        if(result.rows[0].verification == 1){
+                            //credentials match. get a new JWT
+                            let token = jwt.sign(
+                            {
+                                "email": request.auth.email,
+                                "memberid": result.rows[0].memberid
+                             },
+                            config.secret,
+                            { 
+                                expiresIn: '14 days' // expires in 14 days
+                            })
+                            //package and send the results
+                            response.json({
+                            success: true,
+                            message: 'Authentication successful!',
+                            token: token
+                            })
+                        } else{
+                            response.status(400).send({
+                                message: 'Account not verified' 
+                            })
+                        }
+                    })
             } else {
-                //credentials dod not match
+                //credentials do not match
                 response.status(400).send({
                     message: 'Credentials did not match' 
                 })

@@ -12,6 +12,13 @@ let isStringProvided = validation.isStringProvided
 const generateHash = require('../utilities').generateHash
 const generateSalt = require('../utilities').generateSalt
 
+require("dotenv").config();
+const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
+const config = {
+    secret: process.env.JSON_WEB_TOKEN
+}
+var link
 const sendEmail = require('../utilities').sendEmail
 
 const router = express.Router()
@@ -56,8 +63,15 @@ router.post('/', (request, response, next) => {
     const username = isStringProvided(request.body.username) ?  request.body.username : request.body.email
     const email = request.body.email
     const password = request.body.password
+    let token = jwt.sign(
+        config.secret,
+        { 
+            expiresIn: '14 day' // expires in 14 days
+        }
+    )
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
+    //CHECK FOR VALID EMAIL AND PASSWORD HERE!!
     if(isStringProvided(first) 
         && isStringProvided(last) 
         && isStringProvided(username) 
@@ -114,7 +128,33 @@ router.post('/', (request, response, next) => {
                     success: true,
                     email: request.body.email
                 })
-                sendEmail("our.email@lab.com", request.body.email, "Welcome to our App!", "Please verify your Email account.")
+                //email stuff here!!!
+                let transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: {
+                        user: process.env.EMAIL,
+                        pass: process.env.PASSWORD
+                    }
+                });
+                //FIX LINK HERE!!
+                link="http://"+request.get('host')+"/auth/register/verify"+token
+                const mailConfigurations = {
+                    from: 'holochat450@gmail.com',
+                  
+                    to: request.body.email,
+                    
+                    subject: 'Email Verification', 
+
+                    html: "<h1>Welcome to Holochat!<h1> <br>Click on the following link to verify your account.<br><a href="+link+">Click here!!!</a>"
+                };
+
+                transporter.sendMail(mailConfigurations, (error, info) => {
+                    if (error) {
+                        console.log('Error');
+                    }
+                    console.log('Email sent.');
+                });
+                //sendEmail("our.email@lab.com", request.body.email, "Welcome to our App!", "Please verify your Email account.")
             })
             .catch((error) => {
                 //log the error for debugging
@@ -134,6 +174,38 @@ router.post('/', (request, response, next) => {
                 })
             })
 })
+
+router.post('/verify', (request, response) => {
+    let theQuery = "SELECT memberid FROM Members WHERE email=$1 AND verification = 0"
+    let values = request.body.email
+    pool.query(theQuery, values)
+        .then(result => {
+            if(result.rowCount > 0){
+                let verifiedQuery = "UPDATE MEMBERS SET verification = 1 WHERE email = $1"
+                pool.query(verifiedQuery, values)
+                .then(result => {
+                    response.redirect('/');
+                })
+                .catch((error) => {
+                    response.status(400).send({
+                        message: "Error: email verification",
+                        detail: error.detail
+                    })
+                })
+            } else{
+                response.status(400).send({
+                    message: "Error: email already verification/ dne",
+                    detail: error.detail
+                })
+            }
+        })
+        .catch((error) => {
+            response.status(400).send({
+                message: "Error: email verification",
+                detail: error.detail
+            })
+        })
+    })
 
 router.get('/hash_demo', (request, response) => {
     let password = 'hello12345'
