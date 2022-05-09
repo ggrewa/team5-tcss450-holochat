@@ -175,7 +175,7 @@ router.post('/', (request, response, next) => {
             })
 })
 
-router.post('/verify', (request, response) => {
+router.get('/verify', (request, response) => {
     let theQuery = "SELECT memberid FROM Members WHERE email=$1 AND verification = 0"
     let values = request.body.email
     pool.query(theQuery, values)
