@@ -12,9 +12,17 @@ let isStringProvided = validation.isStringProvided
 const generateHash = require('../utilities').generateHash
 const generateSalt = require('../utilities').generateSalt
 
-const sendEmail = require('../utilities').sendEmail
+const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
+const config = {
+    secret: process.env.JSON_WEB_TOKEN
+}
+require('dotenv').config();
+let token
 
 const router = express.Router()
+const bodyParser = require("body-parser")
+router.use(bodyParser.json())
 
 /**
  * @api {post} /auth Request to register a user
@@ -56,6 +64,12 @@ router.post('/', (request, response, next) => {
     const username = isStringProvided(request.body.username) ?  request.body.username : request.body.email
     const email = request.body.email
     const password = request.body.password
+    token = jwt.sign(
+        {email: email},
+        config.secret,
+        { 
+            expiresIn: '14 days' // expires in 14 days
+        })
     //Verify that the caller supplied all the parameters
     //In js, empty strings or null values evaluate to false
     if(isStringProvided(first) 
@@ -114,12 +128,49 @@ router.post('/', (request, response, next) => {
                     success: true,
                     email: request.body.email
                 })
-                sendEmail("our.email@lab.com", request.body.email, "Welcome to our App!", "Please verify your Email account.")
+                //email stuff here!!!
+                let transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: {
+                        user: process.env.EMAIL,
+                        pass: process.env.PASSWORD
+                    }
+                });
+                //FIX LINK HERE!!
+                const mailConfigurations = {
+                    from: 'holochat450@gmail.com',
+                    to: request.body.email,
+                    subject: 'Holochat : Email Verification', 
+                    html:   '<h1>You are almost there...</h1> <br>' +
+                
+                            '<body>' +
+                                'Click on the link to verify your account:<br>' +
+                                '<a href="http://' + request.headers['host'] + '/service?token='+token+'">Click here!</a> <br><br><br>' +
+                                'Regards, <br>' +
+                                'The Holochat team. <br>' +
+                            '</body>'
+                };
+
+                transporter.sendMail(mailConfigurations, (error, info) => {
+                    if (error) {
+                        console.log('Error:');
+                        console.log(error);
+                        response.status(400).send({
+                            message: "other error, see detail",
+                            detail: error.detail
+                        })
+                    } else {
+                        console.log('Email sent.');
+                        response.status(400).send({
+                            message: "Email sent"
+                        })
+                    }
+                });
             })
             .catch((error) => {
                 //log the error for debugging
                 // console.log("PWD insert")
-                // console.log(error)
+                //console.log(error)
 
                 /***********************************************************************
                  * If we get an error inserting the PWD, we should go back and remove
@@ -134,20 +185,5 @@ router.post('/', (request, response, next) => {
                 })
             })
 })
-
-router.get('/hash_demo', (request, response) => {
-    let password = 'hello12345'
-
-    let salt = generateSalt(32)
-    let salted_hash = generateHash(password, salt)
-    let unsalted_hash = generateHash(password)
-
-    response.status(200).send({
-        'salt': salt,
-        'salted_hash': salted_hash,
-        'unsalted_hash': unsalted_hash
-    })
-})
-
 
 module.exports = router

@@ -1,5 +1,6 @@
 //express is the framework we're going to use to handle requests
 const express = require('express')
+const httpProxyClient = require('nodemailer/lib/smtp-connection/http-proxy-client')
 //Create a new instance of express
 const app = express()
 
@@ -23,6 +24,11 @@ app.use('/auth', require('./routes/signin.js'))
 
 app.use('/auth', require('./routes/register.js'))
 
+app.use('/service', require('./routes/verification.js'))
+
+app.use('/changePassword', require('./routes/sendVerifCode.js'))
+
+app.use('/changePassword', require('./routes/updatePassword.js'))
 /*
  * Return HTML for the / end point. 
  * This is a nice location to document your web service API
@@ -33,10 +39,11 @@ app.get("/", (request, response) => {
 
     //this is a Web page so set the content-type to HTML
     response.writeHead(200, {'Content-Type': 'text/html'});
-    for (i = 1; i < 7; i++) {
-        //write a response to the client
-        response.write('<h' + i + ' style="color:blue">Hello World!</h' + i + '>'); 
-    }
+    //write a response to the client
+    response.write('<h1 style="color:DeepSkyBlue">THE 450 EXPERIENCE:</h1><br>');
+    response.write('<img src = "https://i.pinimg.com/564x/2b/fd/b9/2bfdb98d255a886a24a0ee736497eb1e.jpg" width = "500"/><br>');
+    response.write('<img src = "https://i.pinimg.com/564x/62/c8/0f/62c80f457fc04e7f709f5d181a854af9.jpg" width = "500"/><br>'); 
+    response.write('<img src = "https://i.imgflip.com/3si37c.jpg" width = "500"/>'); 
     response.end(); //end the response
 });
 
