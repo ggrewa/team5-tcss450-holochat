@@ -101,20 +101,37 @@ router.get('/', (request, response, next) => {
                 pool.query(verifQuery, emailValue)
                 .then(result => { 
                     if(result.rows[0].verification == 1){
-                        //credentials match. get a new JWT
-                        let token = jwt.sign({
-                            "email": request.auth.email,
-                            "memberid": result.rows[0].memberid
-                        },
-                        config.secret,{ 
-                            expiresIn: '14 days' // expires in 14 days
-                        })
-                        //package and send the results
-                        response.json({
-                            success: true,
-                            message: 'Authentication successful!',
-                            token: token
-                        })
+
+                        let infoQuery = `SELECT firstname, lastname, username, memberid FROM Members WHERE email = $1`
+                        let infoVal = [request.auth.email]
+                        pool.query(infoQuery, infoVal)
+                            .then(result => {
+                                //credentials match. get a new JWT
+                                //send first name, last name and username with jwt token
+                                let token = jwt.sign({
+                                    "first": result.rows[0].firstname,
+                                    "last": result.rows[0].lastname,
+                                    "username": result.rows[0].username,
+                                    "email": request.auth.email,
+                                    "memberid": result.rows[0].memberid
+                                },
+                                config.secret,{ 
+                                    expiresIn: '14 days' // expires in 14 days
+                                })
+                                //package and send the results
+                                response.json({
+                                    success: true,
+                                    message: 'Authentication successful!',
+                                    token: token
+                                })
+                            })
+                            .catch((error) => {
+                                console.log(error)
+                                response.status(400).send({
+                                    message: "other error, see detail",
+                                    detail: error.detail
+                                })
+                            })
                     } else {
                         response.status(400).send({
                             message: "Account has not been verified yet"
