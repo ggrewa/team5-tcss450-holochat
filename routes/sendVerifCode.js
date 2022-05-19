@@ -42,15 +42,14 @@ router.get('/', (request, response, next) => {
         })
     }
 }, (request, response) => {
-    console.log(request.auth.email);
-    const rand = Math.floor(Math.random() * 9999) + 1000;
+    const rand = Math.floor(Math.random() * 8999) + 1000;
     const theQuery = 'UPDATE Members SET code ='+ rand +' WHERE email = $1'
     const values = [request.auth.email]
     pool.query(theQuery, values)
         .then(result => { 
             if (result.rowCount == 0) {
                 response.status(404).send({
-                    message: 'User not found' + request.auth.email 
+                    message: 'User not found' 
                 })
                 return
             }
