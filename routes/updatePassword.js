@@ -21,6 +21,31 @@ require('dotenv').config();
 
 const router = express.Router()
 
+/**
+ * @api {post} /changePassword Request to update a password
+ * @apiName PostchangePassword
+ * @apiGroup changePassword
+ * 
+ * @apiParam {String} email a users email *unique
+ * @apiParam {String} password a users password
+ * @apiParam {String} a verification code
+ * 
+ * @apiParamExample {json} Request-Body-Example:
+ *  {
+ *      "verifCode":"1234",
+ *      "email":"cfb3@fake.email",
+ *      "password":"test12345"
+ *  }
+ * 
+ * @apiSuccess (Success 201) {boolean} success verification code matches
+ * @apiSuccess (Success 201) {String} password is updated 
+ * 
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ *  
+ * @apiError (400: Other Error) {String} message "other error, see detail"
+ * @apiError (400: Other Error) {String} detail Information about th error
+ * 
+ */ 
 router.post('/', (request, response, next) => {
 
     //Retrieve data from query params
