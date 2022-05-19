@@ -50,7 +50,7 @@ router.get('/', (request, response, next) => {
         .then(result => { 
             if (result.rowCount == 0) {
                 response.status(404).send({
-                    message: 'User not found' 
+                    message: 'User not found' + request.auth.email 
                 })
                 return
             }
@@ -72,7 +72,7 @@ router.get('/', (request, response, next) => {
             });
             const mailConfigurations = {
                 from: 'holochat450@gmail.com',
-                to: request.body.email,
+                to: 'ggrewa@uw.edu',
                 subject: 'Holochat : Password Change', 
                 html:   '<h1>We heard you neeeded help.</h1> <br>' +
             
