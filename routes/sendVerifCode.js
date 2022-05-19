@@ -72,7 +72,7 @@ router.get('/', (request, response, next) => {
             });
             const mailConfigurations = {
                 from: 'holochat450@gmail.com',
-                to: 'ggrewa@uw.edu',
+                to: request.auth.email,
                 subject: 'Holochat : Password Change', 
                 html:   '<h1>We heard you neeeded help.</h1> <br>' +
             
