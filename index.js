@@ -29,6 +29,18 @@ app.use('/service', require('./routes/verification.js'))
 app.use('/changePassword', require('./routes/sendVerifCode.js'))
 
 app.use('/changePassword', require('./routes/updatePassword.js'))
+
+//app.use('/contacts', middleware.checkToken,  require('./routes/contacts.js'))
+app.use('/contacts', require('./routes/contacts.js'))
+
+app.use('/messages', middleware.checkToken, require('./routes/messages.js'))
+
+app.use('/chats', middleware.checkToken, require('./routes/chats.js'))
+
+app.use('/auth', middleware.checkToken, require('./routes/pushyregister.js')) 
+
+
+
 /*
  * Return HTML for the / end point. 
  * This is a nice location to document your web service API
