@@ -25,7 +25,7 @@ WHERE Email='test2@test.com';
 INSERT INTO 
     Members(MemberID,FirstName, LastName, Username, Email, Verification, Code)
 VALUES
-     (99,'test2First', 'test2Last', 'test2', 'test2@test.com', 0, 0);
+     (98,'test2First', 'test2Last', 'test2', 'test2@test.com', 0, 0);
 
 
 --Remove the user test3
@@ -34,9 +34,9 @@ WHERE Email='test3@test.com';
 
 --Add the User test3 (password is: test12345)
 INSERT INTO 
-    Members(FirstName, LastName, Username, Email, Password, Salt)
+    Members(MemberID,FirstName, LastName, Username, Email, Verification, Code)
 VALUES
-     (99,'test3First', 'test3Last', 'test3', 'test3@test.com', 0, 0);
+     (97,'test3First', 'test3Last', 'test3', 'test3@test.com', 0, 0);
 
 --Create Global Chat room, ChatId 1
 INSERT INTO
