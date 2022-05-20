@@ -6,6 +6,8 @@ CREATE TABLE Members (MemberID SERIAL PRIMARY KEY,
                       Email VARCHAR(255) NOT NULL UNIQUE,
                       Verification INT DEFAULT 0,
                       Code INT DEFAULT 0
+                      FOREIGN KEY(MemberID) REFERENCES Members(MemberID),
+
 );
 
 DROP TABLE IF EXISTS Credentials CASCADE;
