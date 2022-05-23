@@ -133,7 +133,7 @@ router.post('/', (request, response, next) => {
                 response.status(201).send({
                     success: true,
                     email: request.body.email,
-                    username: request.body.username
+                    password: request.body.password
                 })
         })
             .catch((error) => {
