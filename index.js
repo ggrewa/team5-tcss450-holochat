@@ -30,6 +30,8 @@ app.use('/changePassword', require('./routes/sendVerifCode.js'))
 
 app.use('/changePassword', require('./routes/updatePassword.js'))
 
+app.use('/service', require('./routes/updateNickname.js'))
+
 app.use('/contacts', middleware.checkToken,  require('./routes/contacts.js'))
 
 app.use('/messages', middleware.checkToken, require('./routes/messages.js'))

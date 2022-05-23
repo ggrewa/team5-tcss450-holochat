@@ -21,44 +21,19 @@ require('dotenv').config();
 
 const router = express.Router()
 
-/**
- * @api {post} /changePassword Request to update a password
- * @apiName PostchangePassword
- * @apiGroup changePassword
- * 
- * @apiParam {String} email a users email *unique
- * @apiParam {String} password a users password
- * @apiParam {String} a verification code
- * 
- * @apiParamExample {json} Request-Body-Example:
- *  {
- *      "verifCode":"1234",
- *      "email":"cfb3@fake.email",
- *      "password":"test12345"
- *  }
- * 
- * @apiSuccess (Success 201) {boolean} success verification code matches
- * @apiSuccess (Success 201) {String} password is updated 
- * 
- * @apiError (400: Missing Parameters) {String} message "Missing required information"
- *  
- * @apiError (400: Other Error) {String} message "other error, see detail"
- * @apiError (400: Other Error) {String} detail Information about th error
- * 
- */ 
 router.post('/', (request, response, next) => {
 
     //Retrieve data from query params
     const verifCode = request.body.verifCode
     const email = request.body.email
-    const password = request.body.password
+    const username = request.body.username
     token = jwt.sign(
         {email: email},
         config.secret,
         { 
             expiresIn: '14 days' // expires in 14 days
         })
-    if(isStringProvided(verifCode) && isStringProvided(email) && isStringProvided(password)) {
+    if(isStringProvided(verifCode) && isStringProvided(email) && isStringProvided(username)) {
         let query = 'SELECT code FROM MEMBERS WHERE email =$1'
         let val = [request.body.email]
         pool.query(query, val)
@@ -84,14 +59,12 @@ router.post('/', (request, response, next) => {
         })
     }
 }, (request, response) => {
-    let salt = generateSalt(32)
-    let salted_hash = generateHash(request.body.password, salt)
     let theQuery = `SELECT memberid FROM Members WHERE email =$1`
     let values = [request.body.email]
     pool.query(theQuery, values)
         .then(result => {
-            let query = `UPDATE Credentials SET SaltedHash =$1, Salt =$2 WHERE memberid=$3`
-            let val = [salted_hash, salt,result.rows[0].memberid]
+            let query = `UPDATE Members SET username =$1 WHERE memberid=$2`
+            let val = [request.body.username, result.rows[0].memberid]
             pool.query(query, val)
             .then(result => {
                 //email stuff here!!!
@@ -105,11 +78,11 @@ router.post('/', (request, response, next) => {
                 const mailConfigurations = {
                     from: 'holochat450@gmail.com',
                     to: request.body.email,
-                    subject: 'Password change', 
+                    subject: 'Nickname change', 
                     html:   '<h1>We heard you made a change...</h1> <br>' +
                                             
                     '<body>' +
-                    'Your password has been updated.<br><br>' +
+                    'Your Nickname has been updated.<br><br>' +
                     'Regards, <br>' +
                     'The Holochat team. <br>' +
                     '</body>'
@@ -133,7 +106,7 @@ router.post('/', (request, response, next) => {
                 response.status(201).send({
                     success: true,
                     email: request.body.email,
-                    username: request.body.username
+                    password: request.body.password
                 })
         })
             .catch((error) => {
