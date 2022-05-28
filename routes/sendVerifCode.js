@@ -17,6 +17,34 @@ const config = {
 }
 require('dotenv').config();
 
+/**
+ * @api {get} /changePassword Sends verification code after verifying email exists
+ * @apiName GetchangePassword
+ * @apiGroup changePassword
+ * 
+ * @apiHeader {String} authorization "username" uses Basic Auth 
+ * 
+ * @apiSuccess {boolean} success true when email is found
+ * @apiSuccess {String} message "Authentication successful, Email sent!""
+ * @apiSuccess {String} token JSON Web Token
+ * 
+ *  * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 201 OK
+ *     {
+ *       "success": true,
+ *       "message": "Authentication successful, Email Sent!",
+ *       "token": "eyJhbGciO...abc123"
+ *     }
+ * 
+ * @apiError (400: Missing Authorization Header) {String} message "Missing Authorization Header"
+ * 
+ * @apiError (400: Malformed Authorization Header) {String} message "Malformed Authorization Header"
+ * 
+ * @apiError (404: User Not Found) {String} message "User not found"
+ * 
+ * @apiError (400: Invalid Credentials) {String} message "Credentials did not match"
+ * 
+ */ 
 router.get('/', (request, response, next) => {
     if (isStringProvided(request.headers.authorization) && request.headers.authorization.startsWith('Basic ')) {
         next()
@@ -42,8 +70,7 @@ router.get('/', (request, response, next) => {
         })
     }
 }, (request, response) => {
-    console.log(request.auth.email);
-    const rand = Math.floor(Math.random() * 9999) + 1000;
+    const rand = Math.floor(Math.random() * 8999) + 1000;
     const theQuery = 'UPDATE Members SET code ='+ rand +' WHERE email = $1'
     const values = [request.auth.email]
     pool.query(theQuery, values)
@@ -72,7 +99,7 @@ router.get('/', (request, response, next) => {
             });
             const mailConfigurations = {
                 from: 'holochat450@gmail.com',
-                to: request.body.email,
+                to: request.auth.email,
                 subject: 'Holochat : Password Change', 
                 html:   '<h1>We heard you neeeded help.</h1> <br>' +
             
