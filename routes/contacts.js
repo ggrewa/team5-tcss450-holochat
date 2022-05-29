@@ -287,4 +287,71 @@ const isStringProvided = validation.isStringProvided;
   }
 );
 
+
+//sprint 3 ken
+
+/**
+ * @api {get} /contacts/chatlist Request to get list of recent chats from contacts 
+ * @apiName GetChatList
+ * @apiGroup Contacts
+ * 
+ * @apiDescription Request to get list of chats with chat id and name
+ * 
+ * @apiSuccess {Object[]} chats List of chats with recent message { "chat": 1, "name": "TestName" }
+ * 
+ * @apiError (404: memberId Not Found) {String} message "member ID Not Found"
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ * 
+ * @apiUse JSONError
+ */
+ router.get("/chatlist", (request, response, next) => {
+  console.log("/contacts/chats");
+  console.log("User memberID: " + request.decoded.memberid);
+  if (!request.decoded.memberid) {
+      response.status(400).send({
+          message: "Missing required information"
+      })
+  } else if (isNaN(request.decoded.memberid)) {
+      response.status(400).send({
+          message: "Malformed parameter. memberId must be a number"
+      })
+  } else {
+      next()
+  }
+}, (request, response) => {
+  //Get all chats
+  let query = 'SELECT ChatID, Name FROM Chats where ChatID in (SELECT ChatID FROM ChatMembers where MemberID=$1)'
+  let values = [request.decoded.memberid]
+
+  pool.query(query, values)
+      .then(result => {
+          if (result.rowCount == 0) {
+              response.status(404).send({
+                  message: "No messages"
+              })
+          } else {
+              let listContactChats = [];
+              result.rows.forEach(entry =>
+                  listContactChats.push(
+                      {
+                          "chat": entry.chatid,
+                          "name": entry.name
+                      }
+                  )
+              )
+              response.send({
+                  success: true,
+                  chats: listContactChats
+              })
+          }
+      }).catch(error => {
+          console.log(error);
+          response.status(400).send({
+              message: "SQL Error",
+              error: error
+          })
+      })
+});
+
 module.exports = router;
