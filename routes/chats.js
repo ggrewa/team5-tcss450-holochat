@@ -36,7 +36,7 @@ let isStringProvided = validation.isStringProvided
  * @apiUse JSONError
  */
  router.post("/", (request, response, next) => {
-    console.log('main chat ')
+    console.log('POST request to add a chat')
     if (!request.body.name) {
         response.status(400).send({
             message: "Missing required information"
@@ -190,7 +190,8 @@ router.put("/:chatId?/", (request, response, next) => {
 
 
 /**
- * @api {get} /chats/:chatId? Request to get the emails of user in a chat
+ * @api {get} /chats/viewmembers/:chatId?
+ * Request to get all members (email, username, id) from a given chatid
  * @apiName GetChats
  * @apiGroup Chats
  * 
@@ -210,7 +211,8 @@ router.put("/:chatId?/", (request, response, next) => {
  * 
  * @apiUse JSONError
  */
-router.get("/done/:chatId?", (request, response, next) => {
+router.get("/viewmembers/:chatId?", (request, response, next) => {
+    console.log("GET /viewmembers/" + request.params.chatID);
     //validate on missing or invalid (type) parameters
     if (!request.params.chatId) {
         response.status(400).send({
@@ -218,7 +220,7 @@ router.get("/done/:chatId?", (request, response, next) => {
         })
     } else if (isNaN(request.params.chatId)) {
         response.status(400).send({
-            message: "Malformed parameter. chatId must  mmmm be a number"
+            message: "Malformed parameter. chatId must be a number"
         })
     } else {
         next()
@@ -245,7 +247,7 @@ router.get("/done/:chatId?", (request, response, next) => {
         })
 }, (request, response) => {
     //REtrive the members
-    let query = `SELECT Members.Email 
+    let query = `SELECT Members.Email, Members.Username, Members.MemberID
                     FROM ChatMembers
                     INNER JOIN Members ON ChatMembers.MemberId=Members.MemberId
                     WHERE ChatId=$1`
