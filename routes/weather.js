@@ -11,10 +11,10 @@ const config = {
     secret: process.env.JSON_WEB_TOKEN
 }
 
-const url3 = 'https://api.openweathermap.org/data/2.5/onecall?lat=47.2529&lon=-122.4443&exclude=minutely,alerts&appid='
-/**
- * https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
- */
+const lat = ""
+const lon = ""
+const city = ""
+
 router.get("/:location?", (request, response, next) => {
     if(!isStringProvided(request.params.location)){
         response.status(400).send({
@@ -36,10 +36,9 @@ router.get("/:location?", (request, response, next) => {
                     message: "Error fetching url"
                 })
             } else{
-                const lat = res.body.coord.lat
-                const lon = res.body.coord.lon
-                const city = res.body.name
-                console.log(city)
+                lat = res.body.coord.lat
+                lon = res.body.coord.lon
+                city = res.body.name
                 const url2 = `https://api.openweathermap.org/data/2.5/onecall?lat=`+ lat +`&lon=`+ lon +`&exclude={part}&appid=` + process.env.WEATHER_ID
 
                 req({ url: url2, json: true }, function (error, res) { 
