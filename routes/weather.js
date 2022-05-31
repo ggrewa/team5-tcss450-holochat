@@ -11,9 +11,9 @@ const config = {
     secret: process.env.JSON_WEB_TOKEN
 }
 
-const lat = ""
-const lon = ""
-const city = ""
+var lat = ""
+var lon = ""
+var city = ""
 
 router.get("/:location?", (request, response, next) => {
     if(!isStringProvided(request.params.location)){
