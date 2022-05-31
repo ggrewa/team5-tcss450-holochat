@@ -212,8 +212,8 @@ router.put("/:chatId?/", (request, response, next) => {
  * 
  * @apiUse JSONError
  */
-router.get("/viewmembers/:chatId?", (request, response, next) => {
-    console.log("GET /viewmembers/" + request.params.chatID);
+router.get("/viewmembers/:chatId", (request, response, next) => {
+    console.log("GET /viewmembers/" + request.params.chatId);
     //validate on missing or invalid (type) parameters
     if (!request.params.chatId) {
         response.status(400).send({
@@ -259,6 +259,7 @@ router.get("/viewmembers/:chatId?", (request, response, next) => {
                 // rowCount: result.rowCount,
                 // rows: result.rows
                 success: true,
+                chatID: request.params.chatId,
                 email: request.decoded.email,
                 contacts: result.rows
             })
