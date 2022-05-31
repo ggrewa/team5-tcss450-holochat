@@ -1,5 +1,6 @@
 //express is the framework we're going to use to handle requests
 const express = require('express')
+const req = require('express/lib/request')
 
 //Access the connection to Heroku Database
 const pool = require('../utilities/exports').pool
@@ -255,8 +256,11 @@ router.get("/viewmembers/:chatId?", (request, response, next) => {
     pool.query(query, values)
         .then(result => {
             response.send({
-                rowCount: result.rowCount,
-                rows: result.rows
+                // rowCount: result.rowCount,
+                // rows: result.rows
+                success: true,
+                email: request.decoded.email,
+                contacts: result.rows
             })
         }).catch(err => {
             response.status(400).send({
