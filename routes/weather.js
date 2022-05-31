@@ -32,6 +32,7 @@ router.get("/:location?", (request, response, next) => {
                     message: "Error fetching url"
                 })
             } else{
+                console.log(res.body.lat)
                 let lat = res.body.coord.lat
                 let lon = res.body.coord.lon
                 let city = res.body.name
