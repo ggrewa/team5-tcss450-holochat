@@ -38,7 +38,7 @@ router.get("/:location?", (request, response, next) => {
                 console.log(resp.body)
 
                 const url2 = `https://api.openweathermap.org/data/2.5/onecall?lat=`+ lat +`&lon=`+ lon +`&appid=` + process.env.WEATHER_ID
-
+  
                 req({ url: url2, json: true }, function (error, res) { 
                     if(error){
                         response.status(400).send({
