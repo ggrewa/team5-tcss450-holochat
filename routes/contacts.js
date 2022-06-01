@@ -737,7 +737,7 @@ router.get("/all", (request, response, next) => {
 });
 
 /**
- * @api {get} 'getAll/:memberid? Request to get all members that are not a contact of the passed in memberid
+ * @api {get} 'getNonFriends/:memberid? Request to get all members that are not a contact of the passed in memberid
  * @apiName GetContact
  * @apiGroup Contacts
  * 
@@ -755,7 +755,7 @@ router.get("/all", (request, response, next) => {
  * 
  * @apiUse JSONError
  */
- router.get('/getAll/:memberid', (request, response, next) => {
+ router.get('/getNonFriends/:memberid', (request, response, next) => {
   console.log('I am inside the new route')
   if (!request.params.memberid) {
       response.status(400).send({
@@ -770,7 +770,7 @@ router.get("/all", (request, response, next) => {
   }
 }, (request, response) => {
   console.log('I am on next response')
-  let theQuery = `SELECT firstname, lastname, MemberID from Members WHERE MemberID NOT IN
+  let theQuery = `SELECT firstname, lastname, MemberID, email, username from Members WHERE MemberID NOT IN
                                (SELECT MemberID_B from Contacts WHERE MemberID_A=$1) 
                                                   AND
                                          MemberID NOT IN ($1)`
@@ -785,16 +785,23 @@ router.get("/all", (request, response, next) => {
                   message: 'no change on DB! check the data in tables then your SQL syntax'
               })
           } else {
-              let listOfUnFriend = []
-              result.rows.forEach(entry => {
-                  listOfUnFriend.push({
-                      entry
-                  })
-              })
-              response.send({
-                  listOfUnFriend
-
-              })
+            let listContacts = [];
+            result.rows.forEach(entry =>
+                listContacts.push(
+                    {
+                        "email": entry.email,
+                        "firstName": entry.firstname,
+                        "lastName": entry.lastname,
+                        "userName": entry.username,
+                        "memberId": entry.memberid,
+                    }
+                )
+            )
+            response.send({
+                success: true,
+                email: request.decoded.email, 
+                contacts: listContacts
+            })
           }
       }).catch(err => console.log(err))
 })
