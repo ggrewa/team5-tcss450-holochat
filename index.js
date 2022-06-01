@@ -30,6 +30,8 @@ app.use('/changePassword', require('./routes/sendVerifCode.js'))
 
 app.use('/changePassword', require('./routes/updatePassword.js'))
 
+app.use('/service', require('./routes/updateNickname.js'))
+
 app.use('/contacts', middleware.checkToken,  require('./routes/contacts.js'))
 
 app.use('/messages', middleware.checkToken, require('./routes/messages.js'))
@@ -37,6 +39,8 @@ app.use('/messages', middleware.checkToken, require('./routes/messages.js'))
 app.use('/chats', middleware.checkToken, require('./routes/chats.js'))
 
 app.use('/auth', middleware.checkToken, require('./routes/pushyregister.js')) 
+
+app.use('/weather', require('./routes/weather.js'))
 
 
 
@@ -51,7 +55,7 @@ app.get("/", (request, response) => {
     //this is a Web page so set the content-type to HTML
     response.writeHead(200, {'Content-Type': 'text/html'});
     //write a response to the client
-    response.write('<h1 style="color:DeepSkyBlue">THE 450 EXPERIENCE:</h1><br>');
+    response.write('<h1 style="color:#7300e6">THE 450 EXPERIENCE:</h1><br>');
     response.write('<img src = "https://i.pinimg.com/564x/2b/fd/b9/2bfdb98d255a886a24a0ee736497eb1e.jpg" width = "500"/><br>');
     response.write('<img src = "https://i.pinimg.com/564x/62/c8/0f/62c80f457fc04e7f709f5d181a854af9.jpg" width = "500"/><br>'); 
     response.write('<img src = "https://i.imgflip.com/3si37c.jpg" width = "500"/>'); 
