@@ -26,16 +26,15 @@ router.get("/:location?", (request, response, next) => {
         let zip = request.params.location
         const url = `https://api.openweathermap.org/data/2.5/weather?zip=`+ zip +`,us&appid=` + process.env.WEATHER_ID
 
-        req({ url: url, json: true }, function (error, res) { 
+        req({ url: url, json: true }, function (error, resp) { 
             if(error){
                 response.status(400).send({
                     message: "Error fetching url"
                 })
             } else{
-                console.log(res.body.lat)
-                let lat = res.body.coord.lat
-                let lon = res.body.coord.lon
-                let city = res.body.name
+                let lat = resp.body.coord.lat;
+                let lon = resp.body.coord.lon;
+                let city = resp.body.name;
                 const url2 = `https://api.openweathermap.org/data/2.5/onecall?lat=`+ lat +`&lon=`+ lon +`&exclude={part}&appid=` + process.env.WEATHER_ID
 
                 req({ url: url2, json: true }, function (error, res) { 
