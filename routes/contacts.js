@@ -745,7 +745,7 @@ router.get("/all", (request, response, next) => {
  * 
  * @apiParam {Number} memberId the contact to get info for 
  * 
- * @apiSuccess {JSON} list of unfriend contacts
+ * @apiSuccess {JSON} list of nonfriend contacts
  * 
  * @apiError (404: memberId Not Found) {String} message "Contact not found"
  * @apiError (400: Invalid Parameter) {String} message "Malformed parameter. memberId must be a number" 
@@ -785,7 +785,7 @@ router.get("/all", (request, response, next) => {
                   message: 'no change on DB! check the data in tables then your SQL syntax'
               })
           } else {
-            let listContacts = [];
+            let listOfNonFriend = [];
             result.rows.forEach(entry =>
                 listContacts.push(
                     {
@@ -800,7 +800,7 @@ router.get("/all", (request, response, next) => {
             response.send({
                 success: true,
                 email: request.decoded.email, 
-                contacts: listContacts
+                contacts: listOfNonFriend
             })
           }
       }).catch(err => console.log(err))
