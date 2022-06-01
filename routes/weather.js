@@ -35,7 +35,7 @@ router.get("/:location?", (request, response, next) => {
                 /*let lat = resp.body.coord.lat;
                 let lon = resp.body.coord.lon;
                 let city = resp.body.name;*/
-                const url2 = `https://api.openweathermap.org/data/2.5/onecall?lat=`+ resp.body.coord.lat +`&lon=`+ resp.body.coord.lon +`&exclude={part}&appid=` + process.env.WEATHER_ID
+                const url2 = `https://api.openweathermap.org/data/2.5/onecall?lat=`+ resp.body.coord[1] +`&lon=`+ resp.body.coord[0] +`&appid=` + process.env.WEATHER_ID
 
                 req({ url: url2, json: true }, function (error, res) { 
                     if(error){
@@ -44,19 +44,18 @@ router.get("/:location?", (request, response, next) => {
                         })
                     } else{
                         response.json({
-                            success: true,
-                            //city: city,
-                            tempC: (res.body.current.temp - 273.15),
+                            success: true
+                            /*tempC: (res.body.current.temp - 273.15),
                             tempF: 1.8*(res.body.current.temp - 273.15) + 32,
                             feel: res.body.current.feels_like,
                             pressure: res.body.current.pressure,
                             humidity: res.body.current.humidity,
                             windSpeed: res.body.current.wind_speed,
                             description: res.body.current.weather,
-                            //latitude: res.body.lat,
-                            //longitude: res.body.lon,
+                            latitude: res.body.lat,
+                            longitude: res.body.lon,
                             hourly: res.body.hourly,
-                            daily: res.body.daily
+                            daily: res.body.daily*/
                         })
                     }
                 })
