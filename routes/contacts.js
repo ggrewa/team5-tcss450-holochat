@@ -787,7 +787,7 @@ router.get("/all", (request, response, next) => {
           } else {
             let listOfNonFriend = [];
             result.rows.forEach(entry =>
-                listContacts.push(
+                listOfNonFriend.push(
                     {
                         "email": entry.email,
                         "firstName": entry.firstname,
