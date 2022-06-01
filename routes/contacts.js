@@ -17,10 +17,6 @@ const isStringProvided = validation.isStringProvided;
  * @apiSuccess {Object[]} contacts List of contacts
  * @apiSuccess {boolean} success true on successful SQL query
  * @apiSuccess {String} email the email of the current user
- * @apiSuccess {String} lastName
- * @apiSuccess {String} userName
- * @apiSuccess {int} memberid
- * @apiSuccess {String} if contact if verified 1 = true or 0 = false
  * 
  * @apiError (404: memberId Not Found) {String} message "member ID Not Found"
  * 
@@ -69,7 +65,7 @@ const isStringProvided = validation.isStringProvided;
               )
               response.send({
                   success: true,
-                  email: req.decoded.email, 
+                  email: request.decoded.email, 
                   contacts: listContacts
               })
           }
