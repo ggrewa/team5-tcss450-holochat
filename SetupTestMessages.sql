@@ -13,9 +13,9 @@ WHERE Email='test1@test.com';
 
 --Add the User test1  (password is: test12345)
 INSERT INTO 
-    Members(FirstName, LastName, Username, Email, Password, Salt)
+    Members(MemberID,FirstName, LastName, Username, Email, Verification, Code)
 VALUES
-    ('test1First', 'test1Last', 'test1', 'test1@test.com', 'aafc93bbad0671a0531fa95168c4691be3a0d5e033c33a7b8be9941d2702e566', '5a3d1d9d0bda1e4855576fe486c3a188e14a3f1a381ea938cacdb8c799a3205f');
+    (99,'test1First', 'test1Last', 'test1', 'test1@test.com', 0, 0);
 
 --Remove the user test2
 DELETE FROM Members 
@@ -23,9 +23,10 @@ WHERE Email='test2@test.com';
 
 --Add the User test2  (password is: test12345)
 INSERT INTO 
-    Members(FirstName, LastName, Username, Email, Password, Salt)
+    Members(MemberID,FirstName, LastName, Username, Email, Verification, Code)
 VALUES
-    ('test2First', 'test2Last', 'test2', 'test2@test.com', 'aafc93bbad0671a0531fa95168c4691be3a0d5e033c33a7b8be9941d2702e566', '5a3d1d9d0bda1e4855576fe486c3a188e14a3f1a381ea938cacdb8c799a3205f');
+     (98,'test2First', 'test2Last', 'test2', 'test2@test.com', 0, 0);
+
 
 --Remove the user test3
 DELETE FROM Members 
@@ -33,9 +34,9 @@ WHERE Email='test3@test.com';
 
 --Add the User test3 (password is: test12345)
 INSERT INTO 
-    Members(FirstName, LastName, Username, Email, Password, Salt)
+    Members(MemberID,FirstName, LastName, Username, Email, Verification, Code)
 VALUES
-    ('test3First', 'test3Last', 'test3', 'test3@test.com', 'aafc93bbad0671a0531fa95168c4691be3a0d5e033c33a7b8be9941d2702e566', '5a3d1d9d0bda1e4855576fe486c3a188e14a3f1a381ea938cacdb8c799a3205f');
+     (97,'test3First', 'test3Last', 'test3', 'test3@test.com', 0, 0);
 
 --Create Global Chat room, ChatId 1
 INSERT INTO
@@ -52,6 +53,12 @@ FROM Members
 WHERE Members.Email='test1@test.com'
     OR Members.Email='test2@test.com'
     OR Members.Email='test3@test.com'
+    OR Members.Email='aeldri@uw.edu'
+    OR Members.Email='ggrewa@uw.edu'
+    OR Members.Email='kenahren@gmail.com'
+    OR Members.Email='mason6@uw.edu'
+    OR Members.Email='tmangat@uw.edu'
+    OR Members.Email='cfb3@uw.edu'
 RETURNING *;
 
 --Add Multiple messages to create a conversation
