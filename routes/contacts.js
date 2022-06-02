@@ -94,7 +94,7 @@ router.get("/", (request, response, next) => {
  *
  */
 router.get("/search", (req, res, next) => {
-    const query = "SELECT MemberID, CONCAT(firstname,' ', lastname) AS first_last, username, email FROM members WHERE CONCAT(firstname, ' ', lastname) LIKE $1 OR username LIKE $1 OR email LIKE $1;";
+    const query = `SELECT MemberID, CONCAT(firstname,' ', lastname) AS first_last, username, email FROM members WHERE CONCAT(firstname, ' ', lastname) LIKE $1 OR username LIKE $1 OR email LIKE $1`;
     // const query = "SELECT MATCH (CONCAT (firstname, ' ', lastname), email) AGAINST ('%'+ $1 + '%') FROM members GROUP BY email WITH ROLLUP;";
     //const values = ['%' + req.body.search_string.toLowerCase() + '%'];
     let input = req.body.search_string.toLowerCase();
@@ -145,7 +145,7 @@ router.get("/searchByEmail",
     },
 
     (req, res, next) => {
-        const query = "SELECT MemberID, firstname, lastname, username, email FROM members WHERE email = $1;";
+        const query = `SELECT MemberID, firstname, lastname, username, email FROM members WHERE email = $1`;
         const values = [req.body.search_string];
         pool
             .query(query, values)
@@ -164,6 +164,7 @@ router.get("/searchByEmail",
                 });
             });
     });
+    
 
 
 /**
