@@ -35,8 +35,6 @@ router.get("/:location?", (request, response, next) => {
                 let lon = resp.body.lng;
                 let city = resp.body.city;
 
-                console.log(resp.body)
-
                 const url2 = `https://api.openweathermap.org/data/2.5/onecall?lat=`+ lat +`&lon=`+ lon +`&appid=` + process.env.WEATHER_ID
   
                 req({ url: url2, json: true }, function (error, res) { 
@@ -64,7 +62,33 @@ router.get("/:location?", (request, response, next) => {
                 })
             }
         })
-    } 
+    } else if(request.params.location.length > 5){
+        const [lat, lon]  = request.params.location.split(':')
+        const url = `https://api.openweathermap.org/data/2.5/onecall?lat=`+ lat +`&lon=`+ lon +`&appid=` + process.env.WEATHER_ID
+  
+        req({ url: url, json: true }, function (error, res) {
+            if(error){
+                response.status(400).send({
+                    message: "Error fetching url"
+                })
+            } else{
+                response.json({
+                    success: true,
+                    tempC: (res.body.current.temp - 273.15),
+                    tempF: 1.8*(res.body.current.temp - 273.15) + 32,
+                    feel: res.body.current.feels_like,
+                    pressure: res.body.current.pressure,
+                    humidity: res.body.current.humidity,
+                    windSpeed: res.body.current.wind_speed,
+                    description: res.body.current.weather,
+                    latitude: res.body.lat,
+                    longitude: res.body.lon,
+                    hourly: res.body.hourly,
+                    daily: res.body.daily
+                })
+            }
+        })
+    }
     else{
         response.status(400).send({
             message: "Malformed request"
