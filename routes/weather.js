@@ -11,6 +11,27 @@ const config = {
     secret: process.env.JSON_WEB_TOKEN
 }
 
+/**
+ * @api {get} /auth Request to get weather for a zipcode or lat and lon
+ * @apiName weather
+ * @apiGroup weather
+ * 
+ * @apiSuccess {boolean} success true when weather is found
+ * @apiSuccess {String} token JSON Web Token
+ * 
+ *  * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 201 OK
+ *     {
+ *       "success": true,
+ *       "tempC": 50,
+ *       ...
+ *     }
+ * 
+ * @apiError (400: Missing Authorization Header) {String} message "Error fetching url"
+ * 
+ * @apiError (400: Malformed Authorization Header) {String} message "Malformed request"
+ * 
+ */ 
 router.get("/:location?", (request, response, next) => {
     if(!isStringProvided(request.params.location)){
         response.status(400).send({

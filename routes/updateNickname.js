@@ -21,6 +21,31 @@ require('dotenv').config();
 
 const router = express.Router()
 
+/**
+ * @api {post} /updateNickname Request to update a nickname
+ * @apiName PostupdateNickname
+ * @apiGroup updateNickname
+ * 
+ * @apiParam {String} email a users email *unique
+ * @apiParam {String} password a users password
+ * @apiParam {String} a verification code
+ * 
+ * @apiParamExample {json} Request-Body-Example:
+ *  {
+ *      "verifCode":"1234",
+ *      "email":"cfb3@fake.email",
+ *      "username":"test12345"
+ *  }
+ * 
+ * @apiSuccess (Success 201) {boolean} success verification code matches
+ * @apiSuccess (Success 201) {String} username is updated 
+ * 
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ *  
+ * @apiError (400: Other Error) {String} message "other error, see detail"
+ * @apiError (400: Other Error) {String} detail Information about th error
+ * 
+ */ 
 router.post('/', (request, response, next) => {
 
     //Retrieve data from query params

@@ -77,7 +77,6 @@ let isStringProvided = validation.isStringProvided
  * @apiHeader {String} authorization Valid JSON Web Token JWT
  * 
  * @apiParam {Number} chatId the chat to add the user to
-* @apiBody {[Number}] members array of memberIds { members: [1, 2, 3, 4] }
  * 
  * @apiSuccess {boolean} success true when the name is inserted
  * 
