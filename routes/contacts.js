@@ -117,7 +117,7 @@ router.get("/search", (req, res, next) => {
 });
 
 /**
- * @api {get} /contacts/search/:email Request for a search of contacts based on inputed email param
+ * @api {get} /contacts/searchByEmail Request for a search of contacts based on inputed email body
  * @apiName SearchContacts
  * @apiGroup Contacts
  *
@@ -132,10 +132,9 @@ router.get("/search", (req, res, next) => {
  * @apiError (400: SQL Error) {String} message "SQL Error"
  *
  */
- router.get("/search/:email?", (req, res, next) => {
+ router.get("/searchByEmail", (req, res, next) => {
     const query = "SELECT MemberID, firstname, lastname, username, email FROM members WHERE email = $1;";
-    let input = req.params.search_string.toLowerCase();
-    const values = [input];
+    const values = [req.body.search_string];
     pool
         .query(query, values)
         .then((result) => {
