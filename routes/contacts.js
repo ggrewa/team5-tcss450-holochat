@@ -117,7 +117,7 @@ router.get("/search", (req, res, next) => {
 });
 
 /**
- * @api {get} /contacts/searchByEmail Request for a search of contacts based on inputed email body
+ * @api {get} /contacts/searchByEmail Request for a search of contacts based on inputed email
  * @apiName SearchContacts
  * @apiGroup Contacts
  *
@@ -132,25 +132,39 @@ router.get("/search", (req, res, next) => {
  * @apiError (400: SQL Error) {String} message "SQL Error"
  *
  */
- router.get("/searchByEmail", (req, res, next) => {
-    const query = "SELECT MemberID, firstname, lastname, username, email FROM members WHERE email = $1;";
-    const values = [req.body.search_string];
-    pool
-        .query(query, values)
-        .then((result) => {
-            res.status(200).send({
-                success: true,
-                email: req.decoded.email,
-                contacts: result.rows
-            });
-        })
-        .catch((err) => {
+router.get("/searchByEmail",
+    (req, res, next) => {
+        //validate on empty body
+        if (!req.body.search_string) {
             res.status(400).send({
-                message: "SQL Error",
-                error: err,
+                message: "Missing required information search_string"
+            })
+        } else {
+            next()
+        }
+    },
+
+    (req, res, next) => {
+        const query = "SELECT MemberID, firstname, lastname, username, email FROM members WHERE email = $1;";
+        const values = [req.body.search_string];
+        pool
+            .query(query, values)
+            .then((result) => {
+                //res.status(200).send({
+                res.send({
+                    success: true,
+                    email: req.decoded.email,
+                    contacts: result.rows
+                });
+            })
+            .catch((err) => {
+                res.status(400).send({
+                    message: "SQL Error",
+                    error: err,
+                });
             });
-        });
-});
+    });
+
 
 /**
  * @api {post} /contacts Request to add a contact to current user through request body, needs memberId and verified
