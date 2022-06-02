@@ -116,14 +116,15 @@ router.get("/search", (req, res, next) => {
         });
 });
 
+
 /**
- * @api {get} /contacts/searchByEmail Request for a search of contacts based on inputed email
+ * @api {get} /contacts/search_by_email Request for a search of contacts based on inputed email
  * @apiName SearchContacts
  * @apiGroup Contacts
  *
  * @apiHeader {String} authorization valid json web token (JWT)
  * 
- * @apiBody {String} search_string the string to search with. 
+ * @apiBody {String} input the string to search with. 
  *
  * @apiSuccess {boolean} success true on successful SQL query
  * @apiSuccess {String} email the email of the current user
@@ -132,21 +133,22 @@ router.get("/search", (req, res, next) => {
  * @apiError (400: SQL Error) {String} message "SQL Error"
  *
  */
-router.get("/searchByEmail",
-    (req, res, next) => {
-        //validate on empty body
-        if (!req.body.search_string) {
-            res.status(400).send({
-                message: "Missing required information search_string"
-            })
-        } else {
-            next()
-        }
-    },
+router.get("/search_by_email",
+    //temp comment this out to see if it works
+    // (req, res, next) => {
+    //     //validate on empty body
+    //     if (!req.body.search_string) {
+    //         res.status(400).send({
+    //             message: "Missing required information search_string"
+    //         })
+    //     } else {
+    //         next()
+    //     }
+    // },
 
-    (req, res, next) => {
-        const query = `SELECT MemberID, firstname, lastname, username, email FROM members WHERE email = $1`;
-        const values = [req.body.search_string];
+    (req, res) => {
+        const query = "SELECT MemberID, firstname, lastname, username, email FROM members WHERE email = $1";
+        const values = [req.body.input.toLowerCase()];
         pool
             .query(query, values)
             .then((result) => {
