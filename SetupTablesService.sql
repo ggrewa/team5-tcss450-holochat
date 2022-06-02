@@ -9,9 +9,7 @@ CREATE TABLE Contacts(PrimaryKey SERIAL PRIMARY KEY,
 
 DROP TABLE IF EXISTS Chats;
 CREATE TABLE Chats (ChatID SERIAL PRIMARY KEY,
-                    MemberID INT NOT NULL,
-                    FOREIGN KEY(MemberID) REFERENCES Members(MemberID)
-
+                    Name VARCHAR(255)
 );
 
 DROP TABLE IF EXISTS ChatMembers;
