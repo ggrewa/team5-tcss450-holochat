@@ -128,7 +128,7 @@ router.get("/", (request, response, next) => {
                             "firstName": entry.firstname,
                             "lastName": entry.lastname,
                             "userName": entry.username,
-                            "memberId": entry.memberid_b,
+                            "memberId": entry.memberid_a,
                             "verified": entry.verified
                         }
                     )
