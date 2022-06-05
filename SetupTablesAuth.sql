@@ -5,8 +5,8 @@ CREATE TABLE Members (MemberID SERIAL PRIMARY KEY,
                       Username VARCHAR(255) NOT NULL UNIQUE,
                       Email VARCHAR(255) NOT NULL UNIQUE,
                       Verification INT DEFAULT 0,
-                      Code INT DEFAULT 0
-                      FOREIGN KEY(MemberID) REFERENCES Members(MemberID),
+                      Code INT DEFAULT 0,
+                      FOREIGN KEY(MemberID) REFERENCES Members(MemberID)
 
 );
 
