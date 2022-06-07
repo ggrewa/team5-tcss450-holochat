@@ -78,6 +78,76 @@ router.get("/", (request, response, next) => {
 });
 
 /**
+ * @api {get} /contacts Request to get list of outgoing contact requests
+ * @apiName GetContacts
+ * @apiGroup Contacts
+ * 
+ * @apiDescription Request to get list of contacts
+ * 
+ * @apiSuccess {Object[]} contacts List of contacts
+ * @apiSuccess {boolean} success true on successful SQL query
+ * @apiSuccess {String} email the email of the current user
+ * 
+ * @apiError (404: memberId Not Found) {String} message "member ID Not Found"
+ * 
+ * @apiError (400: SQL Error) {String} message the reported SQL error details
+ * 
+ * @apiUse JSONError
+ */
+ router.get("/outgoing", (request, response, next) => {
+    console.log("/contacts/outgoing");
+    // console.log("User token member id: " + request.decoded.memberid);
+    if (!request.decoded.memberid) {
+        response.status(400).send({
+            message: "Missing required information"
+        })
+    } else if (isNaN(request.decoded.memberid)) {
+        response.status(400).send({
+            message: "Malformed parameter. memberId must be a number"
+        })
+    } else {
+        next()
+    }
+}, (request, response) => {
+    //Get contact info
+    let query = 'SELECT Verified, MemberID_A, Members.FirstName, Members.LastName, Members.email, Members.Username FROM Contacts INNER JOIN Members ON Contacts.MemberID_A = Members.MemberID where Contacts.MemberID_B = $1'
+    let values = [request.decoded.memberid]
+
+    pool.query(query, values)
+        .then(result => {
+            if (result.rowCount == 0) {
+                response.status(404).send({
+                    message: "Contact not found"
+                })
+            } else {
+                let listContacts = [];
+                result.rows.forEach(entry =>
+                    listContacts.push(
+                        {
+                            "email": entry.email,
+                            "firstName": entry.firstname,
+                            "lastName": entry.lastname,
+                            "userName": entry.username,
+                            "memberId": entry.memberid_a,
+                            "verified": entry.verified
+                        }
+                    )
+                )
+                response.send({
+                    success: true,
+                    email: request.decoded.email,
+                    contacts: listContacts
+                })
+            }
+        }).catch(error => {
+            response.status(400).send({
+                message: "SQL Error",
+                error: error
+            })
+        })
+});
+
+/**
  * @api {get} /contacts/search Request for a search of contacts based on input string. 
  * @apiName SearchContacts
  * @apiGroup Contacts
@@ -88,73 +158,35 @@ router.get("/", (request, response, next) => {
  *
  * @apiSuccess {boolean} success true on successful SQL query
  * @apiSuccess {String} email the email of the current user
- * @apiSuccess {Object[]} contacts the ids, names, usernames and email of each connected user
+ * @apiSuccess {Object[]} contacts the ids, names, usernames and email of each connected user: memberid, firstname, lastname, fullname, username, search email
  *
  * @apiError (400: SQL Error) {String} message "SQL Error"
  *
  */
-router.get("/search", (req, res, next) => {
-    const query = `SELECT MemberID, CONCAT(firstname,' ', lastname) AS first_last, username, email FROM members WHERE CONCAT(firstname, ' ', lastname) LIKE $1 OR username LIKE $1 OR email LIKE $1`;
-    // const query = "SELECT MATCH (CONCAT (firstname, ' ', lastname), email) AGAINST ('%'+ $1 + '%') FROM members GROUP BY email WITH ROLLUP;";
-    //const values = ['%' + req.body.search_string.toLowerCase() + '%'];
-    let input = req.body.search_string.toLowerCase();
-    const values = [input];
-    pool
-        .query(query, values)
-        .then((result) => {
-            res.status(200).send({
-                success: true,
-                email: req.decoded.email,
-                contacts: result.rows
-            });
+router.get("/search/:input", (req, res, next) => {
+    //validate on empty body
+    console.log("GET /search/" + req.params.input);
+    if (!req.params.input) {
+        res.status(400).send({
+            message: "Missing required information. Input: email, name or nickname"
         })
-        .catch((err) => {
-            res.status(400).send({
-                message: "SQL Error",
-                error: err,
-            });
-        });
-});
-
-
-/**
- * @api {get} /contacts/search/:email Request for a search of contacts based on inputed email param
- * @apiName SearchContacts
- * @apiGroup Contacts
- *
- * @apiHeader {String} authorization valid json web token (JWT)
- * 
- * @apiBody {String} input the string to search with. 
- *
- * @apiSuccess {boolean} success true on successful SQL query
- * @apiSuccess {String} email the email of the current user
- * @apiSuccess {Object[]} contacts the ids, names, usernames and email of each connected user
- *
- * @apiError (400: SQL Error) {String} message "SQL Error"
- *
- */
-router.get("/search/:email",
-    (req, res, next) => {
-        //validate on empty body
-        console.log("GET /search/" + req.params.email);
-        if (!req.params.email) {
-            res.status(400).send({
-                message: "Missing required information email"
-            })
-        }
-            next()
-    },
-
+    }
+    next()
+},
     (req, res) => {
-        console.log("made it to query of search by email: " + req.params.email)
-        const query = "SELECT MemberID, firstname, lastname, username, email AS searchemail FROM members WHERE email = $1";
-        const input = String(req.params.email).toLowerCase(); //cast as a string to lowercase it
+        const query = `SELECT MemberID, firstname, lastname, CONCAT(firstname,' ', lastname) AS fullname, username, email AS searchemail
+                        FROM members
+                        WHERE LOWER(CONCAT(firstname, ' ', lastname)) LIKE $1 OR
+                        LOWER(username) LIKE $1 OR 
+                        LOWER(email) LIKE $1 OR
+                        LOWER(firstname) LIKE $1 OR
+                        LOWER(lastname) LIKE $1`;
+        const input = String(req.params.input).toLowerCase(); //cast as a string to lowercase it
         const values = [input];
         pool
             .query(query, values)
             .then((result) => {
-                //res.status(200).send({
-                res.send({
+                res.status(200).send({
                     success: true,
                     email: req.decoded.email,
                     contacts: result.rows
@@ -167,7 +199,6 @@ router.get("/search/:email",
                 });
             });
     });
-    
 
 
 /**
@@ -926,5 +957,57 @@ router.get("/contact/:memberId?", (request, response, next) => {
             })
         })
 });
+
+// /**
+//  * @api {get} /contacts/search/:email Request for a search of contacts based on inputed email param
+//  * @apiName SearchContacts
+//  * @apiGroup Contacts
+//  *
+//  * @apiHeader {String} authorization valid json web token (JWT)
+//  * 
+//  * @apiBody {String} input the string to search with. 
+//  *
+//  * @apiSuccess {boolean} success true on successful SQL query
+//  * @apiSuccess {String} email the email of the current user
+//  * @apiSuccess {Object[]} contacts the ids, names, usernames and email of each connected user
+//  *
+//  * @apiError (400: SQL Error) {String} message "SQL Error"
+//  *
+//  */
+// router.get("/search/:email",
+//     (req, res, next) => {
+//         //validate on empty body
+//         console.log("GET /search/" + req.params.email);
+//         if (!req.params.email) {
+//             res.status(400).send({
+//                 message: "Missing required information email"
+//             })
+//         }
+//         next()
+//     },
+
+//     (req, res) => {
+//         console.log("made it to query of search by email: " + req.params.email)
+//         const query = "SELECT MemberID, firstname, lastname, username, email AS searchemail FROM members WHERE email = $1";
+//         const input = String(req.params.email).toLowerCase(); //cast as a string to lowercase it
+//         const values = [input];
+//         pool
+//             .query(query, values)
+//             .then((result) => {
+//                 //res.status(200).send({
+//                 res.send({
+//                     success: true,
+//                     email: req.decoded.email,
+//                     contacts: result.rows
+//                 });
+//             })
+//             .catch((err) => {
+//                 res.status(400).send({
+//                     message: "SQL Error",
+//                     error: err,
+//                 });
+//             });
+//     });
+
 
 module.exports = router;
