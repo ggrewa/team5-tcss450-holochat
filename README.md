@@ -1,4 +1,4 @@
-# tcss-450-labs-base
+# tcss-450-holochat-webservice
 This is the base Repository for the Node.js web service used in TCSS 450 Labs. 
 * `package.json` and `package-lock.json`
     * These files are used to describe dependencies for the project. There are several packages we use for connecting to databases, connecting to our Mail client, etc.
