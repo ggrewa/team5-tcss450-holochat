@@ -86,7 +86,7 @@ router.get("/:location?", (request, response, next) => {
     } else if(request.params.location.length > 5){
         const [lat, lon]  = request.params.location.split(':')
         const url = `https://api.openweathermap.org/data/2.5/onecall?lat=`+ lat +`&lon=`+ lon +`&appid=` + process.env.WEATHER_ID
-  
+        
         req({ url: url, json: true }, function (error, res) {
             if(error){
                 response.status(400).send({

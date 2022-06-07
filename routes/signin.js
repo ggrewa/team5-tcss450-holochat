@@ -96,11 +96,11 @@ router.get('/', (request, response, next) => {
 
             //Did our salted hash match their salted hash?
             if (storedSaltedHash === providedSaltedHash ) {
-                let verifQuery = 'SELECT verification FROM Members WHERE email = $1'
+                /*let verifQuery = 'SELECT verification FROM Members WHERE email = $1'
                 let emailValue = [request.auth.email]
                 pool.query(verifQuery, emailValue)
                 .then(result => { 
-                    if(result.rows[0].verification == 1){
+                    if(result.rows[0].verification == 1){*/
 
                         let infoQuery = `SELECT firstname, lastname, username, memberid FROM Members WHERE email = $1`
                         let infoVal = [request.auth.email]
@@ -132,7 +132,7 @@ router.get('/', (request, response, next) => {
                                     detail: error.detail
                                 })
                             })
-                    } else {
+                    /*} else {
                         response.status(400).send({
                             message: "Account has not been verified yet"
                         })
@@ -144,7 +144,7 @@ router.get('/', (request, response, next) => {
                         detail: error.detail
                     })
                     console.log(error);
-                })
+                })*/
             } else {
                 //credentials dod not match
                 response.status(400).send({
